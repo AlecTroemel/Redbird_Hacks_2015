@@ -1,5 +1,4 @@
 loveframes = require("LoveFrames")
-
 function love.load()
     -- body
     local button = loveframes.Create("button")
