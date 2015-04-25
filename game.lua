@@ -1,9 +1,13 @@
+local anim8 = require 'anim8/anim8'	-- for animation 
 game = {}
 
+local image, animation
+
 function game.load()
+	game.hue = 0
 	game.clock = 0 -- time sense game is loaded
 
-	game.speed = 2
+	game.speed = 4
 	objects = {}   -- Table to hold all the physical objects
 
 
@@ -59,6 +63,12 @@ function game.load()
     end
 
     -- Create the Character 
+
+    -- Create tilesheet 
+    image = slices["unicornTilesheet"].image
+    local g = anim8.newGrid(64, 32, image:getWidth(), image:getHeight())
+    animation = anim8.newAnimation(g('1-7',1), 0.1)
+
     objects.player = {}
     objects.player.image = slices["mp1"].image
     objects.player.jumping = false
@@ -68,9 +78,20 @@ function game.load()
    -- objects.player.image = love.graphics.newImage("assets/fhsbdfsb.png")
 end
 
+
+
 function game.update(dt) 
 	-- Update clock for the background
-	game.clock = game.clock + dt
+
+
+	--game.clock = game.clock + dt
+	animation:update(dt)
+
+
+	game.hue =game.hue + 7
+	if game.hue > 255 then game.hue = 0
+  	elseif game.hue < 0 then game.hue = 255 end
+
 	world:update(dt) 
 	for e,v in ipairs(game.theSlices) do		
 		number = love.math.random( 0, 9 ) 
@@ -173,17 +194,25 @@ end
 
 function game.draw()
 	love.graphics.scale(scale, scale)
+	love.graphics.setColor(HSL(game.hue,255,128))
+	--draw background
+	love.graphics.draw(slices["background"].image,0,0,0,1)
 
+	
 	-- Draw Map
 	for _,v in ipairs(game.theSlices) do
 		love.graphics.draw(v.slice.image, v.x, 0, 0, 1,1)
 	end
 
+	love.graphics.setColor(255,255,255)
+
+
 	-- Draw Character 
-	love.graphics.draw(objects.player.image, 
-		objects.player.body:getX(),
-		objects.player.body:getY()-26, 
-		0, 1,1)
+	animation:draw(image, objects.player.body:getX() - 20,objects.player.body:getY() - 50)
+	--love.graphics.draw(objects.player.image, 
+	--	objects.player.body:getX(),
+	--	objects.player.body:getY()-26, 
+	--	0, 1,1)
 	
 
 
@@ -208,4 +237,21 @@ end
 
 function game.keypressed(key)
 
+end
+
+
+-- Converts HSL to RGB. (input and output range: 0 - 255)
+function HSL(h, s, l, a)
+    if s<=0 then return l,l,l,a end
+    h, s, l = h/256*6, s/255, l/255
+    local c = (1-math.abs(2*l-1))*s
+    local x = (1-math.abs(h%2-1))*c
+    local m,r,g,b = (l-.5*c), 0,0,0
+    if h < 1     then r,g,b = c,x,0
+    elseif h < 2 then r,g,b = x,c,0
+    elseif h < 3 then r,g,b = 0,c,x
+    elseif h < 4 then r,g,b = 0,x,c
+    elseif h < 5 then r,g,b = x,0,c
+    else              r,g,b = c,0,x
+    end return (r+m)*255,(g+m)*255,(b+m)*255,a
 end
