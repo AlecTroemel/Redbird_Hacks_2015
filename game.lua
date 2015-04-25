@@ -11,7 +11,8 @@ function game.load()
 	game.powerUp = false
 	game.speed = 2
 	objects = {}   -- Table to hold all the physical objects
-
+ 	gravity = 400
+    jump_height = 300
 
 	-- create default slices 
 	typesOfSlices_names = {"normal", "pit","pit1","pit2","pit3", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
@@ -55,18 +56,18 @@ function game.load()
 		temp.x = i*tileSize
 		table.insert(game.theSlices,temp)
 
-		
-
 		table.insert(objects, floor)
     end
 
     -- Create the Character 
 
     -- Create tilesheet 
-    objects.player = {}
-    objects.player.x = 50
-    objects.player.y = 100
-
+    player = {}
+    player.x = 15
+    player.y = 65
+    player.y_velocity = 0
+ 	player.jetpack_fuel = 0.5
+ 	player.jetpack_fuel_max = 0.5
     -- Power Up 
     image = slices["unicornTilesheet"].image
     local g = anim8.newGrid(64, 32,  image:getWidth(), image:getHeight())
@@ -77,12 +78,11 @@ function game.load()
     local g2 = anim8.newGrid(32, 32,image2:getWidth(),image2:getHeight())
     runnerAnimation = anim8.newAnimation(g2('1-3',1), 0.1)
 
-    objects.player = {}
-    objects.player.image = slices["runningmvp"].image
-    objects.player.jumping = false
-    objects.player.body =  love.physics.newBody(world, 20, 50, "dynamic")
-    objects.player.shape = love.physics.newCircleShape(5)
-    objects.player.fixture = love.physics.newFixture(objects.player.body, objects.player.shape)
+ 	player.image = slices["runningmvp"].image
+    player.jumping = false
+    player.body =  love.physics.newBody(world, 20, 50, "dynamic")
+    player.shape = love.physics.newCircleShape(5)
+    player.fixture = love.physics.newFixture(player.body, player.shape)
    -- objects.player.image = love.graphics.newImage("assets/fhsbdfsb.png")
 end
 
@@ -146,6 +146,28 @@ function game.update(dt)
 	for e,v in ipairs(game.theSlices) do			
 		v.x = v.x - game.speed
 	end
+
+	-- Super messy collsion stufffff
+	if game.powerUp == false then
+		if player.jetpack_fuel > 0 -- we can still move upwards
+   			and love.keyboard.isDown(" ") then -- and we're actually holding space
+        	player.jetpack_fuel = player.jetpack_fuel - dt -- decrease the fuel meter
+        	player.y_velocity =  player.y_velocity + jump_height * (dt / player.jetpack_fuel_max)
+    	end
+    	if player.y_velocity ~= 0 then -- we're probably jumping
+       		player.y = player.y - player.y_velocity * dt -- dt means we wont move at
+       		-- different speeds if the game lags
+        	player.y_velocity = player.y_velocity - gravity * dt
+        	if player.y > 65 then -- we hit the ground again
+            	player.y_velocity = 0
+            	player.y = 65
+            	player.jetpack_fuel = player.jetpack_fuel_max
+        	end
+    	end
+	end
+
+
+	--[[
     -- jump
     if objects.player.jumping == false then
         if love.keyboard.isDown("up") then
@@ -156,13 +178,13 @@ function game.update(dt)
     x, y = objects.player.body:getLinearVelocity( )
     if (y == 0) then 
         objects.player.jumping = false 
-    end
+    end --]]
 
     -- Reset button for debug
 	if love.keyboard.isDown("down") then
-        objects.player.body:setX(20)
-        objects.player.body:setY(50)
-         objects.player.xVel = 0;
+        player.body:setX(20)
+        player.body:setY(50)
+        player.xVel = 0;
     end
 end
 
@@ -189,7 +211,7 @@ function game.draw()
 	if game.powerUp == true then
 		unicornAnimation:draw(image, 0,50)
 	else
-		runnerAnimation:draw(image2, 15 ,65)		
+		runnerAnimation:draw(image2, player.x ,player.y)		
 	end
 
 	love.graphics.setColor(255,255,255)
