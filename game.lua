@@ -7,7 +7,7 @@ function game.load()
 
 
 	-- create default slices 
-	typesOfSlices_names = {"normal", "pit", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
+	typesOfSlices_names = {"normal", "pit","pit1","pit2","pit3", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
 	typesOfSlices = {}
 	for e,v in ipairs(typesOfSlices_names) do
 		if v == "normal" then
@@ -18,6 +18,18 @@ function game.load()
 			typesOfSlices[v] = {}
 			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_pit"].image
+		elseif v == "pit1" then 
+			typesOfSlices[v] = {}
+			typesOfSlices[v].groundY = 0
+			typesOfSlices[v].image = slices["map_pit1"].image
+		elseif v == "pit2" then 
+			typesOfSlices[v] = {}
+			typesOfSlices[v].groundY = 0
+			typesOfSlices[v].image = slices["map_pit2"].image
+		elseif v == "pit3" then 
+			typesOfSlices[v] = {}
+			typesOfSlices[v].groundY = 0
+			typesOfSlices[v].image = slices["map_pit3"].image
 		elseif v == "normal1" then 
 			typesOfSlices[v] = {}
 			typesOfSlices[v].groundY = 0
@@ -86,7 +98,7 @@ function game.update(dt)
 		--v.body:setX(v.body:getX() - 2)  
 		if (v.x < -32) then
 			table.remove(game.theSlices, e)
-			number = love.math.random( 0, 9 )
+			number = love.math.random( 0, 11 )
 			if number == 0 then
 				temp = {}
 				temp.slice = typesOfSlices["normal"]
@@ -127,11 +139,28 @@ function game.update(dt)
 				temp.slice = typesOfSlices["normal7"]
 				temp.x = 8*32
 				table.insert(game.theSlices,temp)						
-			else 
-				temp = {}
-				temp.slice = typesOfSlices["pit"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)
+			elseif number >=8 then
+				if number == 8 then
+					temp = {}
+					temp.slice = typesOfSlices["pit"]
+					temp.x = 8*32
+					table.insert(game.theSlices,temp)
+				elseif  number == 9 then
+					temp = {}
+					temp.slice = typesOfSlices["pit1"]
+					temp.x = 8*32
+					table.insert(game.theSlices,temp)
+				elseif  number == 10 then
+					temp = {}
+					temp.slice = typesOfSlices["pit2"]
+					temp.x = 8*32
+					table.insert(game.theSlices,temp)
+				elseif  number == 11 then
+					temp = {}
+					temp.slice = typesOfSlices["pit3"]
+					temp.x = 8*32
+					table.insert(game.theSlices,temp)
+				end
 			end
 		end
 	end
