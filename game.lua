@@ -40,7 +40,6 @@ function game.load()
     end
 
     -- create the BALLLLLLALALALALALAL
-    
     objects.player = {}
     objects.player.jumping = false
     objects.player.body =  love.physics.newBody(world, 20, 50, "dynamic")
