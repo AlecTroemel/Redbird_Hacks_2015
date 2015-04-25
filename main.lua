@@ -1,21 +1,25 @@
 loveframes = require("LoveFrames")
+
 --require('menu')
 require('game')
-
 function love.load()
-    -- body
-    --local button = loveframes.Create("button")
-    --button:SetPos(10, 10)
-    slices_fn = {"map_normal"}
+    -- create physics world 50*12
+    world = love.physics.newWorld(0, 50*12, true)
+
+    -- load images (global assets)
+    slices_fn = {"map_normal", "map_pit"}
     slices = {}
     for _,v in ipairs(slices_fn) do
-        slices[v] = love.graphics.newImage("assets/"..v..".png")
+            slices[v] = {}
+            -- The image
+            slices[v].image = love.graphics.newImage("assets/"..v..".png")
     end
 
     -- Set filter to nearest
     for _,v in pairs(slices) do
-        v:setFilter("nearest", "nearest") -- takes 2 operands on scale up and scale down, makes crisp 
+         v.image:setFilter("nearest", "nearest") -- takes 2 operands on scale up and scale down, makes crisp 
     end
+
     -- Initial State
     state = "game"
 
@@ -31,6 +35,7 @@ function love.update(dt)
     end
 
     --loveframes.update(dt)
+    loveframes.update(dt)
 end
 
 function love.draw()
