@@ -1,0 +1,69 @@
+scriptId = 'com.thalmic.examples.test'
+scriptTitle = "test"
+scriptDetailsUrl = "" -- We don't have this until it's submitted to the Myo Market
+
+function onPeriodic()
+end
+
+function onForegroundWindowChange(app, title)
+    myo.debug("I am being recognized.")
+    --myo.controlMouse(true)
+    myo.unlock("hold")
+    myo.vibrate("short")
+    --return platform == "MacOS" and app == com.sublimetext.3
+    return true
+end
+
+function activeAppName()
+	return "This is a test"
+end
+function onActiveChange(isActive)
+	myo.debug("bitches be like")
+end
+
+function onLock()
+	--myo.controlMouse(false)
+end
+
+function onUnlock()
+	--myo.controlMouse(true)
+end
+
+function jump()
+	myo.keyboard("up_arrow", "hold")
+end
+
+function onPoseEdge(pose, edge)
+	
+	if pose == "fist" then
+		myo.debug("fisting")
+		myo.keyboard("up_arrow", "down")
+		--myo.keyboard("up_arrow", "up")
+	
+	elseif pose == "fingersSpread" then
+		myo.debug("fingering")
+		--myo.mouse("left", "click")
+		myo.keyboard("down_arrow", "down")
+
+	elseif pose == "waveIn" then
+		myo.debug("dwaving in")
+		myo.keyboard("right_arrow", "down")
+
+	elseif pose == "waveOut" then
+		myo.debug("waving out")
+		myo.keyboard("left_arrow", "down")
+		
+	end 
+
+
+	if pose =="doubleTap" then
+		myo.debug("double tapping")
+		--myo.lock()
+	end
+	if pose == "rest" then
+		myo.keyboard("up_arrow", "up")
+		myo.keyboard("down_arrow", "up")
+		myo.keyboard("left_arrow", "up")
+		myo.keyboard("right_arrow", "up")
+	end
+end
