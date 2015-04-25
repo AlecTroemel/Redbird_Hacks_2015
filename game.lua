@@ -1,13 +1,15 @@
 local anim8 = require 'anim8/anim8'	-- for animation 
 game = {}
 
-local image, animation
+local image, image2, unicornAnimation, runnerAnimation
+
+
 
 function game.load()
 	game.hue = 0
 	game.clock = 0 -- time sense game is loaded
-
-	game.speed = 4
+	game.powerUp = false
+	game.speed = 2
 	objects = {}   -- Table to hold all the physical objects
 
 
@@ -53,11 +55,7 @@ function game.load()
 		temp.x = i*tileSize
 		table.insert(game.theSlices,temp)
 
-		-- Add floor 
-		floor = {}
-		floor.body = love.physics.newBody(world, i*32, 96+32, "static")
-		floor.shape = love.physics.newRectangleShape(i*32, 64)
-		floor.fixture = love.physics.newFixture(floor.body, floor.shape, i)
+		
 
 		table.insert(objects, floor)
     end
@@ -65,12 +63,22 @@ function game.load()
     -- Create the Character 
 
     -- Create tilesheet 
+    objects.player = {}
+    objects.player.x = 50
+    objects.player.y = 100
+
+    -- Power Up 
     image = slices["unicornTilesheet"].image
-    local g = anim8.newGrid(64, 32, image:getWidth(), image:getHeight())
-    animation = anim8.newAnimation(g('1-7',1), 0.1)
+    local g = anim8.newGrid(64, 32,  image:getWidth(), image:getHeight())
+    unicornAnimation = anim8.newAnimation(g('1-7',1), 0.1)
+
+    -- Normal 
+    image2 = slices["runningmvp"].image
+    local g2 = anim8.newGrid(32, 32,image2:getWidth(),image2:getHeight())
+    runnerAnimation = anim8.newAnimation(g2('1-3',1), 0.1)
 
     objects.player = {}
-    objects.player.image = slices["mp1"].image
+    objects.player.image = slices["runningmvp"].image
     objects.player.jumping = false
     objects.player.body =  love.physics.newBody(world, 20, 50, "dynamic")
     objects.player.shape = love.physics.newCircleShape(5)
@@ -81,11 +89,14 @@ end
 
 
 function game.update(dt) 
-	-- Update clock for the background
-
-
-	--game.clock = game.clock + dt
-	animation:update(dt)
+	if game.powerUp == true then
+		game.hue =game.hue + 7
+		unicornAnimation:update(dt)
+		world:setGravity( 0, 0 )
+	else 
+		runnerAnimation:update(dt)
+		world:setGravity(50*12, 0 )
+	end
 
 
 	game.hue =game.hue + 7
@@ -131,47 +142,10 @@ function game.update(dt)
 			table.insert(game.theSlices,temp)
 		end 
 	end
-
+	--game.speed = game.speed + 0.01
 	for e,v in ipairs(game.theSlices) do			
 		v.x = v.x - game.speed
 	end
-
---[[
-	-- update physical floor locations
-	for e,v in ipairs(objects) do
-		if e ~= player then
-			v.body:setX(v.body:getX() - game.speed*dt)
-			if (v.body:getX() < -32) then
-				table.remove(objects,e)
-<<<<<<< HEAD
-				if number > 0 then
-=======
-				if number < 8 then
->>>>>>> 033459fd1aae0d930c8d686914ffe9044dee41d2
-					floor = {}
-					floor.body = love.physics.newBody(world, 8*32, 96+32, "static")
-					floor.shape = love.physics.newRectangleShape(32+10, 64)
-					floor.fixture = love.physics.newFixture(floor.body, floor.shape, i)
-					table.insert(objects, floor)
-<<<<<<< HEAD
-				else
-=======
-
-				elseif  number >= 8 then
->>>>>>> 033459fd1aae0d930c8d686914ffe9044dee41d2
-					floor = {}
-					floor.body = love.physics.newBody(world, 8*32, 200, "static")
-					floor.shape = love.physics.newRectangleShape(0, 0, 32, 64, 0 )
-					floor.fixture = love.physics.newFixture(floor.body, floor.shape, i)
-					table.insert(objects, floor)
-				end
-			end
-		end
-	end--]]
-
-	objects.player.body:setX(20)
-
-
     -- jump
     if objects.player.jumping == false then
         if love.keyboard.isDown("up") then
@@ -194,7 +168,11 @@ end
 
 function game.draw()
 	love.graphics.scale(scale, scale)
-	love.graphics.setColor(HSL(game.hue,255,128))
+	if game.powerUp == true then
+		love.graphics.setColor(HSL(game.hue,255,128))
+	else
+		love.graphics.setColor(255,255,255)
+	end
 	--draw background
 	love.graphics.draw(slices["background"].image,0,0,0,1)
 
@@ -207,28 +185,12 @@ function game.draw()
 	love.graphics.setColor(255,255,255)
 
 
-	-- Draw Character 
-	animation:draw(image, objects.player.body:getX() - 20,objects.player.body:getY() - 50)
-	--love.graphics.draw(objects.player.image, 
-	--	objects.player.body:getX(),
-	--	objects.player.body:getY()-26, 
-	--	0, 1,1)
-	
-
-
-
-
-	-- for debugging 
-	--[[for _,v in ipairs(objects) do
-		love.graphics.setColor(255, 0, 0, 255)
-		love.graphics.rectangle("line", v.body:getX(), v.body:getY()-32, 32, 64)
-		love.graphics.setColor(255,255,255)
-	end --]]
-
-	-- draw player (ball right now)
-	--love.graphics.setColor(193, 47, 14) --set the drawing color to red for the ball
-	--love.graphics.circle("fill", objects.player.body:getX(), 
-		--objects.player.body:getY(), objects.player.shape:getRadius())
+	-- Draw Character
+	if game.powerUp == true then
+		unicornAnimation:draw(image, 0,50)
+	else
+		runnerAnimation:draw(image2, 15 ,65)		
+	end
 
 	love.graphics.setColor(255,255,255)
 end
@@ -236,7 +198,11 @@ end
 
 
 function game.keypressed(key)
-
+	if key == "i" then
+		game.powerUp = true
+	else
+		game.powerUp = false
+	end
 end
 
 
