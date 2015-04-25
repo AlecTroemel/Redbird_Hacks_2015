@@ -3,18 +3,16 @@ require('game')
 
 
 function love.load()
-    -- create physics world
+    -- create physics world 50*12
     world = love.physics.newWorld(0, 50*12, true)
 
     -- load images (global assets)
-    slices_fn = {"map_normal"}
+    slices_fn = {"map_normal", "map_pit"}
     slices = {}
     for _,v in ipairs(slices_fn) do
-        if v == "map_normal" then
             slices[v] = {}
             -- The image
             slices[v].image = love.graphics.newImage("assets/"..v..".png")
-        end
     end
 
     -- Set filter to nearest
