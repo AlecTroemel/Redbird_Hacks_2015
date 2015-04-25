@@ -2,7 +2,7 @@ game = {}
 
 function game.load()
 	game.clock = 0 -- time sense game is loaded
-	game.speed = 2
+	game.speed = 80
 	objects = {}   -- Table to hold all the physical objects
 
 
@@ -10,41 +10,25 @@ function game.load()
 	typesOfSlices_names = {"normal", "pit", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
 	typesOfSlices = {}
 	for e,v in ipairs(typesOfSlices_names) do
+		typesOfSlices[v] = {}
+		typesOfSlices[v].groundY = 0
 		if v == "normal" then
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_normal"].image		
 		elseif v == "pit" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_pit"].image
 		elseif v == "normal1" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_normal1"].image
 		elseif v == "normal2" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_normal2"].image
 		elseif v == "normal3" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_normal3"].image
 		elseif v == "normal4" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_normal4"].image
 		elseif v == "normal5" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_normal5"].image
 		elseif v == "normal6" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_normal6"].image
 		elseif v == "normal7" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
 			typesOfSlices[v].image = slices["map_normal7"].image				
 		end
 	end
@@ -54,14 +38,14 @@ function game.load()
 
 	for i = 0, 8, 1 do
 		temp = {}
-		temp.slice = typesOfSlices["normal"]
-		temp.x = i*32
+		temp.slice = typesOfSlices["normal1"]
+		temp.x = i*tileSize
 		table.insert(game.theSlices,temp)
 
 		-- Add floor 
 		floor = {}
 		floor.body = love.physics.newBody(world, i*32, 96+32, "static")
-		floor.shape = love.physics.newRectangleShape(32+10, 64)
+		floor.shape = love.physics.newRectangleShape(i*32, 64)
 		floor.fixture = love.physics.newFixture(floor.body, floor.shape, i)
 
 		table.insert(objects, floor)
@@ -78,68 +62,45 @@ end
 
 function game.update(dt) 
 	-- Update clock for the background
-	-- game.clock = game.clock + dt
+	game.clock = game.clock + dt
 	world:update(dt) 
 	for e,v in ipairs(game.theSlices) do
-		v.x = v.x - game.speed
-
+		
+		number = love.math.random( 0, 9 )
 		--v.body:setX(v.body:getX() - 2)  
-		if (v.x < -32) then
+		if (v.x < -64) then
 			table.remove(game.theSlices, e)
-			number = love.math.random( 0, 9 )
-			if number == 0 then
-				temp = {}
+			temp = {}
+			temp.x = 7*tileSize
+			if number == 0 then	
 				temp.slice = typesOfSlices["normal"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)
 			elseif number == 1 then
-				temp = {}
 				temp.slice = typesOfSlices["normal1"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)
 			elseif number == 2 then
-				temp = {}
-				temp.slice = typesOfSlices["normal2"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)	
+				temp.slice = typesOfSlices["normal2"]	
 			elseif number == 3 then
-				temp = {}
 				temp.slice = typesOfSlices["normal3"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)	
 			elseif number == 4 then
-				temp = {}
-				temp.slice = typesOfSlices["normal4"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)	
+				temp.slice = typesOfSlices["normal4"]	
 			elseif number == 5 then
-				temp = {}
-				temp.slice = typesOfSlices["normal5"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)	
+				temp.slice = typesOfSlices["normal5"]	
 			elseif number == 6 then
-				temp = {}
 				temp.slice = typesOfSlices["normal6"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)
 			elseif number == 7 then
-				temp = {}
-				temp.slice = typesOfSlices["normal7"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)						
+				temp.slice = typesOfSlices["normal7"]					
 			else 
-				temp = {}
 				temp.slice = typesOfSlices["pit"]
-				temp.x = 8*32
-				table.insert(game.theSlices,temp)
 			end
-		end
+			table.insert(game.theSlices,temp)
+		end 
+		v.x = v.x - game.speed*dt 
 	end
 
+--[[
 	-- update physical floor locations
 	for e,v in ipairs(objects) do
 		if e ~= player then
-			v.body:setX(v.body:getX() - game.speed)
+			v.body:setX(v.body:getX() - game.speed*dt)
 			if (v.body:getX() < -32) then
 				table.remove(objects,e)
 				if number < 8 then
@@ -158,7 +119,7 @@ function game.update(dt)
 				end
 			end
 		end
-	end
+	end--]]
 	objects.player.body:setX(20)
 
 
@@ -190,11 +151,12 @@ function game.draw()
 	end
 
 	-- for debugging 
-	for _,v in ipairs(objects) do
+	--[[for _,v in ipairs(objects) do
 		love.graphics.setColor(255, 0, 0, 255)
 		love.graphics.rectangle("line", v.body:getX(), v.body:getY()-32, 32, 64)
 		love.graphics.setColor(255,255,255)
-	end
+	end --]]
+
 	-- draw player (ball right now)
 	love.graphics.setColor(193, 47, 14) --set the drawing color to red for the ball
 	love.graphics.circle("fill", objects.player.body:getX(), 

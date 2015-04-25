@@ -6,4 +6,6 @@ function love.conf(t)
 	t.window.width = 8*tileSize*scale
 	t.window.height = 5*tileSize*scale
 	t.window.resizable = true
+	t.window.vsync = true       -- Enable vertical sync (boolean)
+	t.window.fsaa = 0           -- The number of FSAA-buffers (number)
 end
