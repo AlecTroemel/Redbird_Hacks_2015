@@ -1,5 +1,4 @@
 loveframes = require("LoveFrames")
-<<<<<<< HEAD
 require('game')
 
 
@@ -24,39 +23,24 @@ function love.load()
     -- Initial State
     state = "game"
     game.load()
-=======
-
-function love.load()
-    -- body
-    local button = loveframes.Create("button")
-    button:SetPos(10, 10)
->>>>>>> 80d780e7fcb781cb5a825c31f4503bd3253c81d5
 end
 
 
 function love.update(dt)
 
     -- your code
-<<<<<<< HEAD
     if state == "game" then
         game.update(dt)
     end
-=======
-
->>>>>>> 80d780e7fcb781cb5a825c31f4503bd3253c81d5
     loveframes.update(dt)
 end
 
 function love.draw()
 
     -- your code
-<<<<<<< HEAD
     if state == "game" then
         game.draw()
     end
-=======
-
->>>>>>> 80d780e7fcb781cb5a825c31f4503bd3253c81d5
     loveframes.draw()
 
 end
