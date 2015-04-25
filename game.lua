@@ -2,6 +2,7 @@ game = {}
 
 function game.load()
 	game.clock = 0 -- time sense game is loaded
+
 	game.speed = 2
 	objects = {}   -- Table to hold all the physical objects
 
@@ -12,22 +13,9 @@ function game.load()
 	for e,v in ipairs(typesOfSlices_names) do
 		typesOfSlices[v] = {}
 		typesOfSlices[v].groundY = 0
-		if v == "normal" then
-			typesOfSlices[v].image = slices["map_normal"].image		
-		elseif v == "pit" then 
-			typesOfSlices[v].image = slices["map_pit"].image
-		elseif v == "pit1" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
-			typesOfSlices[v].image = slices["map_pit1"].image
-		elseif v == "pit2" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
-			typesOfSlices[v].image = slices["map_pit2"].image
-		elseif v == "pit3" then 
-			typesOfSlices[v] = {}
-			typesOfSlices[v].groundY = 0
-			typesOfSlices[v].image = slices["map_pit3"].image
+		
+		if v == "normal" then 
+			typesOfSlices[v].image = slices["map_normal1"].image
 		elseif v == "normal1" then 
 			typesOfSlices[v].image = slices["map_normal1"].image
 		elseif v == "normal2" then 
@@ -41,7 +29,15 @@ function game.load()
 		elseif v == "normal6" then 
 			typesOfSlices[v].image = slices["map_normal6"].image
 		elseif v == "normal7" then 
-			typesOfSlices[v].image = slices["map_normal7"].image				
+			typesOfSlices[v].image = slices["map_normal7"].image
+		elseif v == "pit" then 
+			typesOfSlices[v].image = slices["map_pit"].image
+		elseif v == "pit1" then 
+			typesOfSlices[v].image = slices["map_pit1"].image
+		elseif v == "pit2" then 
+			typesOfSlices[v].image = slices["map_pit2"].image
+		elseif v == "pit3" then 
+			typesOfSlices[v].image = slices["map_pit3"].image				
 		end
 	end
 
@@ -64,12 +60,13 @@ function game.load()
     end
 
     -- create the BALLLLLLALALALALALAL
-    
+
     objects.player = {}
     objects.player.jumping = false
     objects.player.body =  love.physics.newBody(world, 20, 50, "dynamic")
     objects.player.shape = love.physics.newCircleShape(5)
     objects.player.fixture = love.physics.newFixture(objects.player.body, objects.player.shape)
+   -- objects.player.image = love.graphics.newImage("assets/fhsbdfsb.png")
 end
 
 function game.update(dt) 
@@ -83,6 +80,7 @@ function game.update(dt)
 			temp = {}
 			temp.x = 8*32
 			number = love.math.random( 0, 11 )
+
 			if number == 0 then
 				temp.slice = typesOfSlices["normal"]
 			elseif number == 1 then
@@ -99,7 +97,7 @@ function game.update(dt)
 				temp.slice = typesOfSlices["normal6"]
 			elseif number == 7 then
 				temp.slice = typesOfSlices["normal7"]					
-			elseif number >=8 then
+			else
 				if number == 8 then
 					temp.slice = typesOfSlices["pit"]
 				elseif  number == 9 then
@@ -125,14 +123,22 @@ function game.update(dt)
 			v.body:setX(v.body:getX() - game.speed*dt)
 			if (v.body:getX() < -32) then
 				table.remove(objects,e)
+<<<<<<< HEAD
+				if number > 0 then
+=======
 				if number < 8 then
+>>>>>>> 033459fd1aae0d930c8d686914ffe9044dee41d2
 					floor = {}
 					floor.body = love.physics.newBody(world, 8*32, 96+32, "static")
 					floor.shape = love.physics.newRectangleShape(32+10, 64)
 					floor.fixture = love.physics.newFixture(floor.body, floor.shape, i)
 					table.insert(objects, floor)
+<<<<<<< HEAD
+				else
+=======
 
 				elseif  number >= 8 then
+>>>>>>> 033459fd1aae0d930c8d686914ffe9044dee41d2
 					floor = {}
 					floor.body = love.physics.newBody(world, 8*32, 200, "static")
 					floor.shape = love.physics.newRectangleShape(0, 0, 32, 64, 0 )
