@@ -1,0 +1,54 @@
+scriptId = 'com.thalmic.examples.accelerationTest'
+scriptTitle = "ACCTest"
+scriptDetailsUrl = "" -- We don't have this until it's submitted to the Myo Market
+
+function onPeriodic()
+	
+end
+
+function onPoseEdge(pose, edge)
+	myo.debug("onPseEdge: " .. pse .. ", " .. edge)
+end
+function onForegroundWindowChange(app, title)
+    --myo.debug("forground" .. app .. ", " .. title ..)
+    return true
+end
+
+function activeAppName()
+	return "This is a test"
+end
+
+function onActiveChange(isActive)
+	myo.debug("Active change")
+end
+function onLock()
+	--myo.controlMouse(false)
+end
+
+function onUnlock()
+	--myo.controlMouse(true)
+end
+
+function jump()
+	myo.keyboard("up_arrow", "down")
+end
+
+
+
+function onPoseEdge(pose, edge)
+	
+	if pose == "fist" then
+		myo.debug("fisting")
+		jump()
+	end
+	
+
+
+	
+	if pose == "rest" then
+		myo.keyboard("up_arrow", "up")
+		myo.keyboard("down_arrow", "up")
+		myo.keyboard("left_arrow", "up")
+		myo.keyboard("right_arrow", "up")
+	end
+end
