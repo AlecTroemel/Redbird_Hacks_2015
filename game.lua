@@ -88,6 +88,9 @@ function game.load()
     objects.player.fixture = love.physics.newFixture(objects.player.body, objects.player.shape)
 end
 
+prenumber = -1;
+prenumber1 = -1;
+
 function game.update(dt) 
 	-- Update clock for the background
 	-- game.clock = game.clock + dt
@@ -104,31 +107,43 @@ function game.update(dt)
 				temp.slice = typesOfSlices["normal"]
 				temp.x = 8*32
 				table.insert(game.theSlices,temp)
+				prenumber = number;
+				prenumber1 = prenumber;
 			elseif number == 1 then
 				temp = {}
 				temp.slice = typesOfSlices["normal1"]
 				temp.x = 8*32
 				table.insert(game.theSlices,temp)
+				prenumber = number;
+				prenumber1 = prenumber;
 			elseif number == 2 then
 				temp = {}
 				temp.slice = typesOfSlices["normal2"]
 				temp.x = 8*32
 				table.insert(game.theSlices,temp)	
+				prenumber = number;
+				prenumber1 = prenumber;
 			elseif number == 3 then
 				temp = {}
 				temp.slice = typesOfSlices["normal3"]
 				temp.x = 8*32
 				table.insert(game.theSlices,temp)	
+				prenumber = number;
+				prenumber1 = prenumber;
 			elseif number == 4 then
 				temp = {}
 				temp.slice = typesOfSlices["normal4"]
 				temp.x = 8*32
-				table.insert(game.theSlices,temp)	
+				table.insert(game.theSlices,temp)
+				prenumber = number;
+				prenumber1 = prenumber;	
 			elseif number == 5 then
 				temp = {}
 				temp.slice = typesOfSlices["normal5"]
 				temp.x = 8*32
-				table.insert(game.theSlices,temp)	
+				table.insert(game.theSlices,temp)
+				prenumber = number;
+				prenumber1 = prenumber;
 			elseif number == 6 then
 				temp = {}
 				temp.slice = typesOfSlices["normal6"]
@@ -138,28 +153,38 @@ function game.update(dt)
 				temp = {}
 				temp.slice = typesOfSlices["normal7"]
 				temp.x = 8*32
-				table.insert(game.theSlices,temp)						
+				table.insert(game.theSlices,temp)
+				prenumber = number;
+				prenumber1 = prenumber;						
 			elseif number >=8 then
-				if number == 8 then
+				if number == 8 and prenumber < 8 and prenumber1 < 8  then
 					temp = {}
 					temp.slice = typesOfSlices["pit"]
 					temp.x = 8*32
 					table.insert(game.theSlices,temp)
+					prenumber = number;
+					prenumber1 = prenumber;
 				elseif  number == 9 then
 					temp = {}
 					temp.slice = typesOfSlices["pit1"]
 					temp.x = 8*32
 					table.insert(game.theSlices,temp)
+					prenumber = number;
+					prenumber1 = prenumber;
 				elseif  number == 10 then
 					temp = {}
 					temp.slice = typesOfSlices["pit2"]
 					temp.x = 8*32
 					table.insert(game.theSlices,temp)
+					prenumber = number;
+					prenumber1 = prenumber;
 				elseif  number == 11 then
 					temp = {}
 					temp.slice = typesOfSlices["pit3"]
 					temp.x = 8*32
 					table.insert(game.theSlices,temp)
+					prenumber = number;
+					prenumber1 = prenumber;
 				end
 			end
 		end
