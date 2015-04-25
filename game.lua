@@ -46,6 +46,7 @@ function game.load()
     objects.player.body =  love.physics.newBody(world, 20, 50, "dynamic")
     objects.player.shape = love.physics.newCircleShape(5)
     objects.player.fixture = love.physics.newFixture(objects.player.body, objects.player.shape)
+   -- objects.player.image = love.graphics.newImage("assets/fhsbdfsb.png")
 end
 
 function game.update(dt) 
@@ -58,8 +59,8 @@ function game.update(dt)
 		--v.body:setX(v.body:getX() - 2)  
 		if (v.x < -32) then
 			table.remove(game.theSlices, e)
-			number = love.math.random( 0, 1 )
-			if number == 0 then
+			number = love.math.random( 0, 2 )
+			if number > 0 then
 				temp = {}
 				temp.slice = typesOfSlices["normal"]
 				temp.x = 8*32
@@ -79,13 +80,13 @@ function game.update(dt)
 			v.body:setX(v.body:getX() - game.speed)
 			if (v.body:getX() < -32) then
 				table.remove(objects,e)
-				if number == 0 then
+				if number > 0 then
 					floor = {}
 					floor.body = love.physics.newBody(world, 8*32, 96+32, "static")
 					floor.shape = love.physics.newRectangleShape(32+10, 64)
 					floor.fixture = love.physics.newFixture(floor.body, floor.shape, i)
 					table.insert(objects, floor)
-				elseif  number == 1 then
+				else
 					floor = {}
 					floor.body = love.physics.newBody(world, 8*32, 200, "static")
 					floor.shape = love.physics.newRectangleShape(0, 0, 32, 64, 0 )
