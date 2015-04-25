@@ -13,7 +13,6 @@ function game.load()
 	for e,v in ipairs(typesOfSlices_names) do
 		typesOfSlices[v] = {}
 		typesOfSlices[v].groundY = 0
-		
 		if v == "normal" then 
 			typesOfSlices[v].image = slices["map_normal1"].image
 		elseif v == "normal1" then 
@@ -37,7 +36,7 @@ function game.load()
 		elseif v == "pit2" then 
 			typesOfSlices[v].image = slices["map_pit2"].image
 		elseif v == "pit3" then 
-			typesOfSlices[v].image = slices["map_pit3"].image				
+			typesOfSlices[v].image = slices["map_pit3"].image			
 		end
 	end
 
@@ -59,9 +58,9 @@ function game.load()
 		table.insert(objects, floor)
     end
 
-    -- create the BALLLLLLALALALALALAL
-
+    -- Create the Character 
     objects.player = {}
+    objects.player.image = slices["mp1"].image
     objects.player.jumping = false
     objects.player.body =  love.physics.newBody(world, 20, 50, "dynamic")
     objects.player.shape = love.physics.newCircleShape(5)
@@ -174,11 +173,21 @@ end
 
 function game.draw()
 	love.graphics.scale(scale, scale)
+
+	-- Draw Map
 	for _,v in ipairs(game.theSlices) do
 		love.graphics.draw(v.slice.image, v.x, 0, 0, 1,1)
 	end
 
+	-- Draw Character 
+	love.graphics.draw(objects.player.image, 
+		objects.player.body:getX(),
+		objects.player.body:getY()-26, 
+		0, 1,1)
 	
+
+
+
 
 	-- for debugging 
 	--[[for _,v in ipairs(objects) do
@@ -188,9 +197,9 @@ function game.draw()
 	end --]]
 
 	-- draw player (ball right now)
-	love.graphics.setColor(193, 47, 14) --set the drawing color to red for the ball
-	love.graphics.circle("fill", objects.player.body:getX(), 
-		objects.player.body:getY(), objects.player.shape:getRadius())
+	--love.graphics.setColor(193, 47, 14) --set the drawing color to red for the ball
+	--love.graphics.circle("fill", objects.player.body:getX(), 
+		--objects.player.body:getY(), objects.player.shape:getRadius())
 
 	love.graphics.setColor(255,255,255)
 end
