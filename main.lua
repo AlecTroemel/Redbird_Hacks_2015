@@ -7,7 +7,11 @@ function love.load()
     world = love.physics.newWorld(0, 50*12, true)
 
     -- load images (global assets)
+<<<<<<< HEAD
     slices_fn = {"map_normal", "map_pit"}
+=======
+    slices_fn = {"map_normal", "map_pit","map_pit1","map_pit2","map_pit3","map_normal1","map_normal2","map_normal3","map_normal4","map_normal5","map_normal6","map_normal7" }
+>>>>>>> 033459fd1aae0d930c8d686914ffe9044dee41d2
     slices = {}
     for _,v in ipairs(slices_fn) do
             slices[v] = {}
