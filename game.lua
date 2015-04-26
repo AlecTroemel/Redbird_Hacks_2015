@@ -9,7 +9,6 @@ function game.load()
 	game.hue = 0
 	game.clock = 0 -- time sense game is loaded
 	game.speed = 2
-	objects = {}   -- Table to hold all the physical objects
  	gravity = 800
     jump_height = 100  
 	-- create default slices 
@@ -39,7 +38,9 @@ function game.load()
 		elseif v == "pit2" then 
 			typesOfSlices[v].image = slices["map_pit2"].image
 		elseif v == "pit3" then 
-			typesOfSlices[v].image = slices["map_pit3"].image			
+			typesOfSlices[v].image = slices["map_pit3"].image
+		else 
+			typesOfSlices[v].image = slices["map_normal"].image			
 		end
 	end
 
@@ -51,7 +52,6 @@ function game.load()
 		temp.slice = typesOfSlices["normal1"]
 		temp.x = i*tileSize
 		table.insert(game.theSlices,temp)
-		--table.insert(objects, floor)
     end
 
     -- Create the Character 
@@ -75,10 +75,6 @@ function game.load()
  	player.image = slices["runningmvp"].image
     player.jumping = false
     player.jumpImage = slices["mpjump"].image
-
-   -- player.body =  love.physics.newBody(world, 20, 50, "dynamic")
-    --player.shape = love.physics.newCircleShape(5)
-   -- player.fixture = love.physics.newFixture(player.body, player.shape)
 
     -- Power Up item 
     powerUp = {}
@@ -117,12 +113,12 @@ function game.update(dt)
 		end
 
 		-- randomly create a new slice/ delete old one when one leaves map 
-		number = love.math.random( 0, 9 ) 
-		if (v.x < -64) then
+		--number = love.math.random( 0, 9 ) 
+		if (v.x < -30) then
 			table.remove(game.theSlices, e)
 			temp = {}
 			temp.x = 8*32
-			number = love.math.random( 0, 11 )
+			number = love.math.random(0, 11)
 			if powerUp.switcher == true and powerUp.counter < 100
 										and powerUp.counter > 50 then
 				temp.slice = typesOfSlices["normal"]
@@ -167,11 +163,15 @@ function game.update(dt)
 					elseif  number == 11 then
 						temp.slice = typesOfSlices["pit3"]
 						successivePits = successivePits + 1
+					else
+						temp.slice = typesOfSlices["normal1"]
+						successivePits = 0	
 					end
 				end
 			end
 			 	-- The last node to be added
 			table.insert(game.theSlices,temp)
+
 		end 
 	end
 
