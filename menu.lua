@@ -58,7 +58,8 @@ function menu.draw()
 	love.graphics.draw(clouds.front.image, clouds.front.x2, 0, 0, scale, scale)
 
 
-	love.graphics.draw(title,2*tileSize*scale +50,(menu.dt_temp-1)*30*scale , 0, scale/1.5, scale-0.5)
+
+	love.graphics.draw(title,2*tileSize*scale +70,(menu.dt_temp-1)*30*scale , 0, scale/1.5, scale-0.5)
 	love.graphics.setColor(100, 12, 50)
     
     if menu.dt_temp == 2.5 then

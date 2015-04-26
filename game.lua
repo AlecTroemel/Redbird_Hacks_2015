@@ -25,7 +25,8 @@ function game.load()
  	gravity = 800
     jump_height = 100  
 	-- create default slices 
-	typesOfSlices_names = {"normal","pit1","pit2","pit3", "normal", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
+
+	typesOfSlices_names = {"pit1","pit2","pit3","high1","high2","high3" ,"normal", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
 
 	typesOfSlices = {}
 	for e,v in ipairs(typesOfSlices_names) do
@@ -53,6 +54,12 @@ function game.load()
 			typesOfSlices[v].image = slices["map_pit2"].image
 		elseif v == "pit3" then 
 			typesOfSlices[v].image = slices["map_pit3"].image
+		elseif v == "high1" then 
+			typesOfSlices[v].image = slices["map_high1"].image
+		elseif v == "high2" then 
+			typesOfSlices[v].image = slices["map_high2"].image
+		elseif v == "high3" then 
+			typesOfSlices[v].image = slices["map_high3"].image
 		else 
 			typesOfSlices[v].image = slices["map_normal"].image			
 		end
@@ -134,7 +141,7 @@ function game.update(dt)
 			table.remove(game.theSlices, e)
 			temp = {}
 			temp.x = 8*32
-			number = love.math.random( 0, 11 ) 
+			number = love.math.random( 0, 14 ) 
 
 			if powerUp.switcher == true and powerUp.counter < 100
 										and powerUp.counter > 50 then
@@ -166,18 +173,27 @@ function game.update(dt)
 					successivePits = 0
 				elseif number == 7 then
 					temp.slice = typesOfSlices["normal7"]
-					successivePits = 0					
+					successivePits = 0	
+				elseif number == 8 then
+					temp.slice = typesOfSlices["high1"]
+					successivePits = 0
+				elseif number == 9 then
+					temp.slice = typesOfSlices["high2"]
+					successivePits = 0
+				elseif number == 10 then
+					temp.slice = typesOfSlices["high3"]
+					successivePits = 0				
 				else
-					if number == 8 then
+					if number == 11 then
 						temp.slice = typesOfSlices["pit1"]
 						successivePits = successivePits + 1
-					elseif  number == 9 then
+					elseif  number == 12 then
 						temp.slice = typesOfSlices["pit1"]
 						successivePits = successivePits + 1
-					elseif  number == 10 then
+					elseif  number == 13 then
 						temp.slice = typesOfSlices["pit2"]
 						successivePits = successivePits + 1
-					elseif  number == 11 then
+					elseif  number == 14 then
 						temp.slice = typesOfSlices["pit3"]
 						successivePits = successivePits + 1
 					else
