@@ -8,7 +8,6 @@ local image, image2, unicornAnimation, runnerAnimation
 function game.load()
 	game.hue = 0
 	game.clock = 0 -- time sense game is loaded
-	game.powerUp = false
 	game.speed = 2
 	objects = {}   -- Table to hold all the physical objects
  	gravity = 800
@@ -54,8 +53,7 @@ function game.load()
 		temp.slice = typesOfSlices["normal1"]
 		temp.x = i*tileSize
 		table.insert(game.theSlices,temp)
-
-		table.insert(objects, floor)
+		--table.insert(objects, floor)
     end
 
     -- Create the Character 
@@ -78,17 +76,26 @@ function game.load()
 
  	player.image = slices["runningmvp"].image
     player.jumping = false
-    player.body =  love.physics.newBody(world, 20, 50, "dynamic")
-    player.shape = love.physics.newCircleShape(5)
-    player.fixture = love.physics.newFixture(player.body, player.shape)
-   -- objects.player.image = love.graphics.newImage("assets/fhsbdfsb.png")
+
+   -- player.body =  love.physics.newBody(world, 20, 50, "dynamic")
+    --player.shape = love.physics.newCircleShape(5)
+   -- player.fixture = love.physics.newFixture(player.body, player.shape)
+
+    -- Power Up item 
+    powerUp = {}
+    powerUp.x = 300
+    powerUp.y = 20
+    powerUp.x_velocity = 0
+    powerUp.image = slices["bottle"].image
+    powerUp.counter = 0
+    powerUp.switcher = false
 end
 
 
 
 function game.update(dt)
 	-- power up color change and animation update 
-	if game.powerUp == true then
+	if powerUp.switcher == true then
 		game.hue =game.hue + 7
 		if game.hue > 255 then game.hue = 0
   		elseif game.hue < 0 then game.hue = 255 end
@@ -159,8 +166,8 @@ function game.update(dt)
 	   		floorX = 128
 	end
 
-
-	if game.powerUp == false then
+	-- handle jumping and falling 
+	if powerUp.switcher == false then
 		if player.jetpack_fuel > 0 -- we can still move upwards
    			and love.keyboard.isDown(" ") then -- and we're actually holding space
         	player.jetpack_fuel = player.jetpack_fuel - dt -- decrease the fuel meter
@@ -173,12 +180,8 @@ function game.update(dt)
 
         	if floorX == 128 then
         		if (player.y > 90) then
-
-        		-- game over
-        		--player.y = 65
         			state = "ks"
         		end
-
         	elseif player.y > 65 then -- we hit the ground again
             	player.y_velocity = 0
             	player.y = 65
@@ -186,6 +189,35 @@ function game.update(dt)
         	end
     	end
 	end
+
+	-- Power up movement and collision
+	if powerUp.switcher == false and powerUp.x_velocity ~= 3 then
+		powerUpNumber = love.math.random(0, 250)
+		if powerUpNumber == 250 then
+			powerUp.x_velocity = 3
+		end
+	end
+	if game.dist(player.x, player.y, powerUp.x, powerUp.y) < 10 then
+		powerUp.x = 300
+		powerUp.switcher = true
+		powerUp.counter = 300
+		powerUp.x_velocity = 0
+	end
+	powerUp.x = powerUp.x - powerUp.x_velocity
+	if powerUp.switcher == true then
+		powerUp.counter = powerUp.counter - 1
+	end
+	if powerUp.counter < 0 then
+		powerUp.switcher = false
+	end
+	if powerUp.x < 0 then
+		powerUp.x = 300
+		powerUp.x_velocity = 0
+	end
+
+
+	-- Speed up the game.. Currently not working
+	--game.speed = game.speed + 0.001
 
     -- Reset button for debug
 	if love.keyboard.isDown("down") then
@@ -197,29 +229,34 @@ end
 
 function game.draw()
 	love.graphics.scale(scale, scale)
-	if game.powerUp == true then
+
+	-- If power up is on, do some crazy color stuff
+	if powerUp.switcher == true then
 		love.graphics.setColor(HSL(game.hue,255,128))
-	else
-		love.graphics.setColor(255,255,255)
-	end
+	else love.graphics.setColor(255,255,255) end
+
 	--draw background
 	love.graphics.draw(slices["background"].image,0,0,0,1)
 
-	
 	-- Draw Map
 	for _,v in ipairs(game.theSlices) do
 		love.graphics.draw(v.slice.image, v.x, 0, 0, 1,1)
 	end
-
 	love.graphics.setColor(255,255,255)
 
 
 	-- Draw Character
-	if game.powerUp == true then
+	if powerUp.switcher == true then
 		unicornAnimation:draw(image, 0,50)
 	else
 		runnerAnimation:draw(image2, player.x ,player.y)		
 	end
+
+
+	-- Draw the power up if its in the screen
+	
+		love.graphics.draw(powerUp.image, powerUp.x, powerUp.y)
+	
 
 	love.graphics.setColor(255,255,255)
 end
@@ -228,9 +265,9 @@ end
 
 function game.keypressed(key)
 	if key == "i" then
-		game.powerUp = true
+		powerUp.switcher = true
 	elseif key == "u" then 
-		game.powerUp = false
+		powerUp.switcher = false
 	end
 end
 
@@ -249,4 +286,9 @@ function HSL(h, s, l, a)
     elseif h < 5 then r,g,b = x,0,c
     else              r,g,b = c,0,x
     end return (r+m)*255,(g+m)*255,(b+m)*255,a
+end
+
+-- Distance formula
+function game.dist(x1,y1,x2,y2)
+	return math.sqrt( (x1-x2)^2 + (y1-y2)^2 )
 end
