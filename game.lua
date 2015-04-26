@@ -6,21 +6,28 @@ local image, image2, unicornAnimation, runnerAnimation
 
 
 function game.load()
+	played = false
+	toPlay = true
+	gameMusic = love.audio.newSource("assets/gameMusic.ogg")
+	music:setLooping(true)
+    
+    powerUpMusic = love.audio.newSource("assets/powerUpMusic.ogg")
+	music:setLooping(true)
+    
 	game.hue = 0
 	game.clock = 0 -- time sense game is loaded
-	game.powerUp = false
 	game.speed = 2
 	objects = {}   -- Table to hold all the physical objects
  	gravity = 800
     jump_height = 100  
 	-- create default slices 
-	typesOfSlices_names = {"normal", "pit","pit1","pit2","pit3", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
+	typesOfSlices_names = {"normal","pit1","pit2","pit3", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
 	typesOfSlices = {}
 	for e,v in ipairs(typesOfSlices_names) do
 		typesOfSlices[v] = {}
 		typesOfSlices[v].groundY = 0
 		if v == "normal" then 
-			typesOfSlices[v].image = slices["map_normal1"].image
+			typesOfSlices[v].image = slices["map_normal"].image
 		elseif v == "normal1" then 
 			typesOfSlices[v].image = slices["map_normal1"].image
 		elseif v == "normal2" then 
@@ -35,8 +42,6 @@ function game.load()
 			typesOfSlices[v].image = slices["map_normal6"].image
 		elseif v == "normal7" then 
 			typesOfSlices[v].image = slices["map_normal7"].image
-		elseif v == "pit" then 
-			typesOfSlices[v].image = slices["map_pit"].image
 		elseif v == "pit1" then 
 			typesOfSlices[v].image = slices["map_pit1"].image
 		elseif v == "pit2" then 
@@ -54,13 +59,11 @@ function game.load()
 		temp.slice = typesOfSlices["normal1"]
 		temp.x = i*tileSize
 		table.insert(game.theSlices,temp)
-
-		table.insert(objects, floor)
+		--table.insert(objects, floor)
     end
 
     -- Create the Character 
-
-    -- Create tilesheet 
+    -- Create tilesheet and animations
     player = {}
     player.x = 15
     player.y = 65
@@ -79,17 +82,33 @@ function game.load()
 
  	player.image = slices["runningmvp"].image
     player.jumping = false
-    player.body =  love.physics.newBody(world, 20, 50, "dynamic")
-    player.shape = love.physics.newCircleShape(5)
-    player.fixture = love.physics.newFixture(player.body, player.shape)
-   -- objects.player.image = love.graphics.newImage("assets/fhsbdfsb.png")
+    player.jumpImage = slices["mpjump"].image
+
+   -- player.body =  love.physics.newBody(world, 20, 50, "dynamic")
+    --player.shape = love.physics.newCircleShape(5)
+   -- player.fixture = love.physics.newFixture(player.body, player.shape)
+
+    -- Power Up item 
+    powerUp = {}
+    powerUp.x = 300
+    powerUp.y = 20
+    powerUp.x_velocity = 0
+    powerUp.image = slices["bottle"].image
+    powerUp.counter = 0
+    powerUp.switcher = false
+
+    successivePits = 0
 end
 
 
 
 function game.update(dt)
+    if toPlay then 
+    	love.audio.play(gameMusic)
+		toPlay = false
+	end	
 	-- power up color change and animation update 
-	if game.powerUp == true then
+	if powerUp.switcher == true then
 		game.hue =game.hue + 7
 		if game.hue > 255 then game.hue = 0
   		elseif game.hue < 0 then game.hue = 255 end
@@ -114,34 +133,54 @@ function game.update(dt)
 			temp = {}
 			temp.x = 8*32
 			number = love.math.random( 0, 11 )
-
-			if number == 0 then
+			if powerUp.switcher == true and powerUp.counter < 100
+										and powerUp.counter > 50 then
 				temp.slice = typesOfSlices["normal"]
-			elseif number == 1 then
+			elseif successivePits == 2 then
 				temp.slice = typesOfSlices["normal1"]
-			elseif number == 2 then
-				temp.slice = typesOfSlices["normal2"]	
-			elseif number == 3 then
-				temp.slice = typesOfSlices["normal3"]
-			elseif number == 4 then
-				temp.slice = typesOfSlices["normal4"]	
-			elseif number == 5 then
-				temp.slice = typesOfSlices["normal5"]	
-			elseif number == 6 then
-				temp.slice = typesOfSlices["normal6"]
-			elseif number == 7 then
-				temp.slice = typesOfSlices["normal7"]					
+				successivePits = 0
 			else
-				if number == 8 then
-					temp.slice = typesOfSlices["pit"]
-				elseif  number == 9 then
-					temp.slice = typesOfSlices["pit1"]
-				elseif  number == 10 then
-					temp.slice = typesOfSlices["pit2"]
-				elseif  number == 11 then
-					temp.slice = typesOfSlices["pit3"]
+				if number == 0 then
+					temp.slice = typesOfSlices["normal1"]
+					successivePits = 0
+				elseif number == 1 then
+					temp.slice = typesOfSlices["normal1"]
+					successivePits = 0
+				elseif number == 2 then
+					temp.slice = typesOfSlices["normal2"]
+					successivePits = 0	
+				elseif number == 3 then
+					temp.slice = typesOfSlices["normal3"]
+					successivePits = 0
+				elseif number == 4 then
+					temp.slice = typesOfSlices["normal4"]	
+					successivePits = 0
+				elseif number == 5 then
+					temp.slice = typesOfSlices["normal5"]
+					successivePits = 0	
+				elseif number == 6 then
+					temp.slice = typesOfSlices["normal6"]
+					successivePits = 0
+				elseif number == 7 then
+					temp.slice = typesOfSlices["normal7"]
+					successivePits = 0					
+				else
+					if number == 8 then
+						temp.slice = typesOfSlices["pit1"]
+						successivePits = successivePits + 1
+					elseif  number == 9 then
+						temp.slice = typesOfSlices["pit1"]
+						successivePits = successivePits + 1
+					elseif  number == 10 then
+						temp.slice = typesOfSlices["pit2"]
+						successivePits = successivePits + 1
+					elseif  number == 11 then
+						temp.slice = typesOfSlices["pit3"]
+						successivePits = successivePits + 1
+					end
 				end
 			end
+			 	-- The last node to be added
 			table.insert(game.theSlices,temp)
 		end 
 	end
@@ -152,7 +191,7 @@ function game.update(dt)
 	end
 
 	-- Super messy collsion stufffff
-	floorX = 65
+	floorX = 65 
 	if floor.slice == typesOfSlices["pit"]  or
 	   floor.slice == typesOfSlices["pit1"] or
 	   floor.slice == typesOfSlices["pit2"] or
@@ -160,8 +199,8 @@ function game.update(dt)
 	   		floorX = 128
 	end
 
-
-	if game.powerUp == false then
+	-- handle jumping and falling 
+	if powerUp.switcher == false then
 		if player.jetpack_fuel > 0 -- we can still move upwards
    			and love.keyboard.isDown(" ") then -- and we're actually holding space
         	player.jetpack_fuel = player.jetpack_fuel - dt -- decrease the fuel meter
@@ -172,16 +211,62 @@ function game.update(dt)
        		-- different speeds if the game lags
         	player.y_velocity = player.y_velocity - gravity * dt
 
-        	if player.y > floorX and floorX == 128 then
-        		-- game over
-        		state = "over"
-        	elseif player.y > floorX then -- we hit the ground again
+        	if floorX == 128 then
+        		if (player.y > 90) then
+        			state = "ks"
+        			love.audio.stop(gameMusic)
+        		end
+        	elseif player.y > 65 then -- we hit the ground again
             	player.y_velocity = 0
             	player.y = 65
             	player.jetpack_fuel = player.jetpack_fuel_max
         	end
     	end
 	end
+
+	-- Power up movement and collision
+	--if yhe player is not in the power up state and the power up is not moving 
+	if powerUp.switcher == false and powerUp.x_velocity ~= 3 then
+		powerUpNumber = love.math.random(0, 250) -- Create random number
+		if powerUpNumber == 250 then
+			powerUp.x_velocity = 3
+		end
+	end
+	-- If he player hits the power up
+	if game.dist(player.x, player.y, powerUp.x, powerUp.y) < 10 then
+		powerUp.x = 300
+		powerUp.switcher = true
+		powerUp.counter = 300	-- length of the power up 
+		powerUp.x_velocity = 0
+        love.audio.pause(gameMusic)
+        if(played)then
+		love.audio.resume(powerUpMusic)
+	else
+		love.audio.play(powerUpMusic)
+	end
+	end
+	powerUp.x = powerUp.x - powerUp.x_velocity	-- increment velocity 
+	-- if the plater is in the power up state, decrease the counter
+	if powerUp.switcher == true then
+		powerUp.counter = powerUp.counter - 1
+	end
+	-- If counter is 0, exit power up state 
+	if powerUp.counter < 0 then
+		love.audio.pause(powerUpMusic)
+		love.audio.resume(gameMusic)
+		powerUp.switcher = false
+	end
+	-- Wrap power up back to the right
+	if powerUp.x < 0 then
+		
+		powerUp.x = 300
+		
+		powerUp.x_velocity = 0
+	end
+
+
+	-- Speed up the game.. Currently not working
+	--game.speed = game.speed + 0.001
 
     -- Reset button for debug
 	if love.keyboard.isDown("down") then
@@ -193,29 +278,35 @@ end
 
 function game.draw()
 	love.graphics.scale(scale, scale)
-	if game.powerUp == true then
+
+	-- If power up is on, do some crazy color stuff
+	if powerUp.switcher == true then
 		love.graphics.setColor(HSL(game.hue,255,128))
-	else
-		love.graphics.setColor(255,255,255)
-	end
+	else love.graphics.setColor(255,255,255) end
+
 	--draw background
 	love.graphics.draw(slices["background"].image,0,0,0,1)
 
-	
 	-- Draw Map
 	for _,v in ipairs(game.theSlices) do
 		love.graphics.draw(v.slice.image, v.x, 0, 0, 1,1)
 	end
-
 	love.graphics.setColor(255,255,255)
 
 
 	-- Draw Character
-	if game.powerUp == true then
+	if powerUp.switcher == true then
 		unicornAnimation:draw(image, 0,50)
+	elseif player.y_velocity ~= 0 then
+		love.graphics.draw(player.jumpImage,player.x,player.y,0,1 )
 	else
 		runnerAnimation:draw(image2, player.x ,player.y)		
 	end
+
+
+	-- Draw the power up (may be off screen)
+	love.graphics.draw(powerUp.image, powerUp.x, powerUp.y)
+	
 
 	love.graphics.setColor(255,255,255)
 end
@@ -224,9 +315,9 @@ end
 
 function game.keypressed(key)
 	if key == "i" then
-		game.powerUp = true
+		powerUp.switcher = true
 	elseif key == "u" then 
-		game.powerUp = false
+		powerUp.switcher = false
 	end
 end
 
@@ -245,4 +336,9 @@ function HSL(h, s, l, a)
     elseif h < 5 then r,g,b = x,0,c
     else              r,g,b = c,0,x
     end return (r+m)*255,(g+m)*255,(b+m)*255,a
+end
+
+-- Distance formula
+function game.dist(x1,y1,x2,y2)
+	return math.sqrt( (x1-x2)^2 + (y1-y2)^2 )
 end
