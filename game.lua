@@ -77,7 +77,7 @@ function game.load()
     -- Create the Character 
     -- Create tilesheet and animations
     player = {}
-    player.x = 15
+    player.x = 20
     player.y = 65
     player.y_velocity = 0
  	player.jetpack_fuel = 0.1
@@ -257,7 +257,7 @@ function game.update(dt)
 		end
 	end
 	-- If he player hits the power up
-	if game.dist(player.x, player.y, powerUp.x, powerUp.y) < 10 then
+	if game.dist(player.x, player.y, powerUp.x, powerUp.y) < 14 then
 		powerUp.x = 300
 		powerUp.switcher = true
 		powerUp.counter = 300	-- length of the power up 
@@ -279,7 +279,7 @@ function game.update(dt)
 		love.audio.pause(powerUpMusic)
 		love.audio.resume(gameMusic)
 		powerUp.switcher = false
-		powerUp.x_velocity = 0
+		--powerUp.x_velocity = 3
 	end
 	-- Wrap power up back to the right
 	if powerUp.x < 0 then
@@ -288,7 +288,7 @@ function game.update(dt)
 	end
 
 	-- Speed up the game.. Currently not working
-	--game.speed = game.speed + 0.001
+	-- game.speed = game.speed + 0.001
 
     -- Reset button for debug
 	if love.keyboard.isDown("down") then
