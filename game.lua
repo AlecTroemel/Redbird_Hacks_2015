@@ -2,7 +2,14 @@ local anim8 = require 'anim8/anim8'	-- for animation
 game = {}
 local image, image2, unicornAnimation, runnerAnimation
 
+local image, image2, unicornAnimation, runnerAnimation
+count = 0.0
+score = 0
+realScore = 0
+
+
 function game.load()
+
 	played = false
 	toPlay = true
 	gameMusic = love.audio.newSource("assets/gameMusic.ogg")
@@ -14,10 +21,12 @@ function game.load()
 	game.hue = 0
 	game.clock = 0 -- time sense game is loaded
 	game.speed = 2
+	objects = {}   -- Table to hold all the physical objects
  	gravity = 800
     jump_height = 100  
 	-- create default slices 
-	typesOfSlices_names = {"normal","pit1","pit2","pit3", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
+	typesOfSlices_names = {"normal","pit1","pit2","pit3", "normal", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
+
 	typesOfSlices = {}
 	for e,v in ipairs(typesOfSlices_names) do
 		typesOfSlices[v] = {}
@@ -89,7 +98,6 @@ function game.load()
     powerUp.image = slices["bottle"].image
     powerUp.counter = 0
     powerUp.switcher = false
-
     successivePits = 0
 end
 
@@ -100,6 +108,7 @@ function game.update(dt)
     	love.audio.play(gameMusic)
 		toPlay = false
 	end	
+
 	-- power up color change and animation update 
 	if powerUp.switcher == true then
 		game.hue =game.hue + 7
@@ -125,7 +134,8 @@ function game.update(dt)
 			table.remove(game.theSlices, e)
 			temp = {}
 			temp.x = 8*32
-			number = love.math.random(0, 11)
+			number = love.math.random( 0, 11 ) 
+
 			if powerUp.switcher == true and powerUp.counter < 100
 										and powerUp.counter > 50 then
 				temp.slice = typesOfSlices["normal"]
@@ -210,8 +220,10 @@ function game.update(dt)
 
         	if floorX == 128 then
         		if (player.y > 90) then
-        			state = "ks"
         			love.audio.stop(gameMusic)
+        			ks.load()
+        			state = "ks"
+        			realScore = 0
         		end
         	elseif player.y > 65 then -- we hit the ground again
             	player.y_velocity = 0
@@ -237,10 +249,10 @@ function game.update(dt)
 		powerUp.x_velocity = 0
         love.audio.pause(gameMusic)
         if(played)then
-		love.audio.resume(powerUpMusic)
-	else
-		love.audio.play(powerUpMusic)
-	end
+			love.audio.resume(powerUpMusic)
+		else
+			love.audio.play(powerUpMusic)
+		end
 	end
 	powerUp.x = powerUp.x - powerUp.x_velocity	-- increment velocity 
 	-- if the plater is in the power up state, decrease the counter
@@ -252,15 +264,13 @@ function game.update(dt)
 		love.audio.pause(powerUpMusic)
 		love.audio.resume(gameMusic)
 		powerUp.switcher = false
+		powerUp.x_velocity = 0
 	end
 	-- Wrap power up back to the right
 	if powerUp.x < 0 then
-		
 		powerUp.x = 300
-		
 		powerUp.x_velocity = 0
 	end
-
 
 	-- Speed up the game.. Currently not working
 	--game.speed = game.speed + 0.001
@@ -282,7 +292,53 @@ function game.draw()
 	else love.graphics.setColor(255,255,255) end
 
 	--draw background
-	love.graphics.draw(slices["background"].image,0,0,0,1)
+	if count < 256 then
+		love.graphics.draw(slices["background1"].image,0 - count,0,0,1)
+		love.graphics.draw(slices["background2"].image,32 - count,0,0,1)
+		love.graphics.draw(slices["background3"].image,64 - count,0,0,1)
+		love.graphics.draw(slices["background4"].image,96 - count,0,0,1)
+		love.graphics.draw(slices["background5"].image,128 - count,0,0,1)
+		love.graphics.draw(slices["background6"].image,160 - count,0,0,1)
+		love.graphics.draw(slices["background7"].image,192 - count,0,0,1)
+		love.graphics.draw(slices["background8"].image,224 - count,0,0,1)
+		love.graphics.draw(slices["background1"].image,256 - count,0,0,1)
+		love.graphics.draw(slices["background2"].image,288 - count,0,0,1)
+		love.graphics.draw(slices["background3"].image,320 - count,0,0,1)
+		love.graphics.draw(slices["background4"].image,352 - count,0,0,1)
+		love.graphics.draw(slices["background5"].image,384 - count,0,0,1)
+		love.graphics.draw(slices["background6"].image,416 - count,0,0,1)
+		love.graphics.draw(slices["background7"].image,448 - count,0,0,1)
+		love.graphics.draw(slices["background8"].image,480 - count,0,0,1)
+		score = score + .2
+		if score >= 1 then 
+			if powerUp.switcher == true then
+				realScore = realScore + 5
+			else
+				realScore = realScore +1
+			end
+			score = 0
+		end
+		
+
+	else 
+		love.graphics.draw(slices["background1"].image,256 - count,0,0,1)
+		love.graphics.draw(slices["background2"].image,288 - count,0,0,1)
+		love.graphics.draw(slices["background3"].image,320 - count,0,0,1)
+		love.graphics.draw(slices["background4"].image,352 - count,0,0,1)
+		love.graphics.draw(slices["background5"].image,384 - count,0,0,1)
+		love.graphics.draw(slices["background6"].image,416 - count,0,0,1)
+		love.graphics.draw(slices["background7"].image,448 - count,0,0,1)
+		love.graphics.draw(slices["background8"].image,480 - count,0,0,1)
+		count = 0
+	end
+	count = count + .4
+	-- score.setTextScale(5)
+	love.graphics.print(realScore, 220, 5)
+	-- local m = count
+	-- if m % 12 == 0 then 
+	-- 	score = score + 1
+	-- end
+	--end
 
 	-- Draw Map
 	for _,v in ipairs(game.theSlices) do
@@ -317,6 +373,7 @@ function game.keypressed(key)
 end
 
 
+
 -- Converts HSL to RGB. (input and output range: 0 - 255)
 function HSL(h, s, l, a)
     if s<=0 then return l,l,l,a end
@@ -337,3 +394,12 @@ end
 function game.dist(x1,y1,x2,y2)
 	return math.sqrt( (x1-x2)^2 + (y1-y2)^2 )
 end
+
+function game.keypressed(key)
+	if key == "i" then
+		powerUp.switcher = true
+	elseif key == "u" then 
+		powerUp.switcher = false
+	end
+end
+

@@ -1,7 +1,7 @@
 loveframes = require("LoveFrames")
 
 menu = {}
---comment
+
 function menu.load()
 	menu.front_clock = 0
 	menu.middle_clock = 0
@@ -63,7 +63,7 @@ function menu.draw()
     
     if menu.dt_temp == 2.5 then
 		-- printf will take string and formats it 							center | left | right
-		love.graphics.printf("Enter", 0, 80*scale, love.graphics.getWidth(), "center")
+		love.graphics.printf("Click Enter To Start", 0, 110*scale, love.graphics.getWidth(), "center")
 	end
 	love.graphics.setColor(255,255,255)
 end
