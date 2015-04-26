@@ -23,7 +23,8 @@ function love.load()
 
 
     -- Initial State
-    state = "game"
+    state = "over"
+    --state = "game"
     game.load()
 end
 

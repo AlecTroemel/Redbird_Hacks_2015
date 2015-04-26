@@ -11,9 +11,8 @@ function game.load()
 	game.powerUp = false
 	game.speed = 2
 	objects = {}   -- Table to hold all the physical objects
- 	gravity = 400
-    jump_height = 300
-
+ 	gravity = 800
+    jump_height = 100  
 	-- create default slices 
 	typesOfSlices_names = {"normal", "pit","pit1","pit2","pit3", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
 	typesOfSlices = {}
@@ -66,8 +65,8 @@ function game.load()
     player.x = 15
     player.y = 65
     player.y_velocity = 0
- 	player.jetpack_fuel = 0.5
- 	player.jetpack_fuel_max = 0.5
+ 	player.jetpack_fuel = 0.1
+ 	player.jetpack_fuel_max = 0.1
     -- Power Up 
     image = slices["unicornTilesheet"].image
     local g = anim8.newGrid(64, 32,  image:getWidth(), image:getHeight())
@@ -88,9 +87,12 @@ end
 
 
 
-function game.update(dt) 
+function game.update(dt)
+	-- power up color change and animation update 
 	if game.powerUp == true then
 		game.hue =game.hue + 7
+		if game.hue > 255 then game.hue = 0
+  		elseif game.hue < 0 then game.hue = 255 end
 		unicornAnimation:update(dt)
 		world:setGravity( 0, 0 )
 	else 
@@ -98,13 +100,14 @@ function game.update(dt)
 		world:setGravity(50*12, 0 )
 	end
 
+	
+	for e,v in ipairs(game.theSlices) do
+		-- decide what the floor the player is currently under for collision 
+		if (v.x - 32) < player.x  and  player.x < (v.x + 32) then
+			floor = v
+		end
 
-	game.hue =game.hue + 7
-	if game.hue > 255 then game.hue = 0
-  	elseif game.hue < 0 then game.hue = 255 end
-
-	world:update(dt) 
-	for e,v in ipairs(game.theSlices) do		
+		-- randomly create a new slice/ delete old one when one leaves map 
 		number = love.math.random( 0, 9 ) 
 		if (v.x < -64) then
 			table.remove(game.theSlices, e)
@@ -142,43 +145,43 @@ function game.update(dt)
 			table.insert(game.theSlices,temp)
 		end 
 	end
-	--game.speed = game.speed + 0.01
+
+	-- update slice x positions 
 	for e,v in ipairs(game.theSlices) do			
 		v.x = v.x - game.speed
 	end
 
 	-- Super messy collsion stufffff
+	floorX = 65
+	if floor.slice == typesOfSlices["pit"]  or
+	   floor.slice == typesOfSlices["pit1"] or
+	   floor.slice == typesOfSlices["pit2"] or
+	   floor.slice == typesOfSlices["pit3"] then
+	   		floorX = 128
+	end
+
+
 	if game.powerUp == false then
 		if player.jetpack_fuel > 0 -- we can still move upwards
    			and love.keyboard.isDown(" ") then -- and we're actually holding space
         	player.jetpack_fuel = player.jetpack_fuel - dt -- decrease the fuel meter
-        	player.y_velocity =  player.y_velocity + jump_height * (dt / player.jetpack_fuel_max)
+        	player.y_velocity = 20 + player.y_velocity + jump_height * (2*dt / player.jetpack_fuel_max)
     	end
-    	if player.y_velocity ~= 0 then -- we're probably jumping
+    	if player.y_velocity ~= 0 or floorX == 128 then -- we're probably jumping
        		player.y = player.y - player.y_velocity * dt -- dt means we wont move at
        		-- different speeds if the game lags
         	player.y_velocity = player.y_velocity - gravity * dt
-        	if player.y > 65 then -- we hit the ground again
+
+        	if player.y > floorX and floorX == 128 then
+        		-- game over
+        		state = "over"
+        	elseif player.y > floorX then -- we hit the ground again
             	player.y_velocity = 0
             	player.y = 65
             	player.jetpack_fuel = player.jetpack_fuel_max
         	end
     	end
 	end
-
-
-	--[[
-    -- jump
-    if objects.player.jumping == false then
-        if love.keyboard.isDown("up") then
-            objects.player.jumping = true
-            objects.player.body:applyLinearImpulse(0,-25)
-        end
-    end
-    x, y = objects.player.body:getLinearVelocity( )
-    if (y == 0) then 
-        objects.player.jumping = false 
-    end --]]
 
     -- Reset button for debug
 	if love.keyboard.isDown("down") then
@@ -222,7 +225,7 @@ end
 function game.keypressed(key)
 	if key == "i" then
 		game.powerUp = true
-	else
+	elseif key == "u" then 
 		game.powerUp = false
 	end
 end
