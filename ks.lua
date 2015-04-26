@@ -47,6 +47,7 @@ function ks.keypressed(key)
 	--change the game state, and return to the menu
     if key == "r" then 
 		state = "menu"
+		menu.load()
     elseif key == "q" then
       love.event.quit()
     end

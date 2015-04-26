@@ -13,13 +13,13 @@ function game.load()
  	gravity = 800
     jump_height = 100  
 	-- create default slices 
-	typesOfSlices_names = {"normal", "pit","pit1","pit2","pit3", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
+	typesOfSlices_names = {"normal","pit1","pit2","pit3", "normal1", "normal2", "normal3", "normal4", "normal5", "normal6", "normal7"}
 	typesOfSlices = {}
 	for e,v in ipairs(typesOfSlices_names) do
 		typesOfSlices[v] = {}
 		typesOfSlices[v].groundY = 0
 		if v == "normal" then 
-			typesOfSlices[v].image = slices["map_normal1"].image
+			typesOfSlices[v].image = slices["map_normal"].image
 		elseif v == "normal1" then 
 			typesOfSlices[v].image = slices["map_normal1"].image
 		elseif v == "normal2" then 
@@ -34,8 +34,6 @@ function game.load()
 			typesOfSlices[v].image = slices["map_normal6"].image
 		elseif v == "normal7" then 
 			typesOfSlices[v].image = slices["map_normal7"].image
-		elseif v == "pit" then 
-			typesOfSlices[v].image = slices["map_pit"].image
 		elseif v == "pit1" then 
 			typesOfSlices[v].image = slices["map_pit1"].image
 		elseif v == "pit2" then 
@@ -76,6 +74,7 @@ function game.load()
 
  	player.image = slices["runningmvp"].image
     player.jumping = false
+    player.jumpImage = slices["mpjump"].image
 
    -- player.body =  love.physics.newBody(world, 20, 50, "dynamic")
     --player.shape = love.physics.newCircleShape(5)
@@ -89,11 +88,15 @@ function game.load()
     powerUp.image = slices["bottle"].image
     powerUp.counter = 0
     powerUp.switcher = false
+
+    successivePits = 0
 end
 
 
 
 function game.update(dt)
+
+		
 	-- power up color change and animation update 
 	if powerUp.switcher == true then
 		game.hue =game.hue + 7
@@ -120,34 +123,54 @@ function game.update(dt)
 			temp = {}
 			temp.x = 8*32
 			number = love.math.random( 0, 11 )
-
-			if number == 0 then
+			if powerUp.switcher == true and powerUp.counter < 100
+										and powerUp.counter > 50 then
 				temp.slice = typesOfSlices["normal"]
-			elseif number == 1 then
+			elseif successivePits == 2 then
 				temp.slice = typesOfSlices["normal1"]
-			elseif number == 2 then
-				temp.slice = typesOfSlices["normal2"]	
-			elseif number == 3 then
-				temp.slice = typesOfSlices["normal3"]
-			elseif number == 4 then
-				temp.slice = typesOfSlices["normal4"]	
-			elseif number == 5 then
-				temp.slice = typesOfSlices["normal5"]	
-			elseif number == 6 then
-				temp.slice = typesOfSlices["normal6"]
-			elseif number == 7 then
-				temp.slice = typesOfSlices["normal7"]					
+				successivePits = 0
 			else
-				if number == 8 then
-					temp.slice = typesOfSlices["pit1"]
-				elseif  number == 9 then
-					temp.slice = typesOfSlices["pit1"]
-				elseif  number == 10 then
-					temp.slice = typesOfSlices["pit2"]
-				elseif  number == 11 then
-					temp.slice = typesOfSlices["pit3"]
+				if number == 0 then
+					temp.slice = typesOfSlices["normal1"]
+					successivePits = 0
+				elseif number == 1 then
+					temp.slice = typesOfSlices["normal1"]
+					successivePits = 0
+				elseif number == 2 then
+					temp.slice = typesOfSlices["normal2"]
+					successivePits = 0	
+				elseif number == 3 then
+					temp.slice = typesOfSlices["normal3"]
+					successivePits = 0
+				elseif number == 4 then
+					temp.slice = typesOfSlices["normal4"]	
+					successivePits = 0
+				elseif number == 5 then
+					temp.slice = typesOfSlices["normal5"]
+					successivePits = 0	
+				elseif number == 6 then
+					temp.slice = typesOfSlices["normal6"]
+					successivePits = 0
+				elseif number == 7 then
+					temp.slice = typesOfSlices["normal7"]
+					successivePits = 0					
+				else
+					if number == 8 then
+						temp.slice = typesOfSlices["pit1"]
+						successivePits = successivePits + 1
+					elseif  number == 9 then
+						temp.slice = typesOfSlices["pit1"]
+						successivePits = successivePits + 1
+					elseif  number == 10 then
+						temp.slice = typesOfSlices["pit2"]
+						successivePits = successivePits + 1
+					elseif  number == 11 then
+						temp.slice = typesOfSlices["pit3"]
+						successivePits = successivePits + 1
+					end
 				end
 			end
+			 	-- The last node to be added
 			table.insert(game.theSlices,temp)
 		end 
 	end
@@ -191,25 +214,30 @@ function game.update(dt)
 	end
 
 	-- Power up movement and collision
+	--if yhe player is not in the power up state and the power up is not moving 
 	if powerUp.switcher == false and powerUp.x_velocity ~= 3 then
-		powerUpNumber = love.math.random(0, 250)
+		powerUpNumber = love.math.random(0, 250) -- Create random number
 		if powerUpNumber == 250 then
 			powerUp.x_velocity = 3
 		end
 	end
+	-- If he player hits the power up
 	if game.dist(player.x, player.y, powerUp.x, powerUp.y) < 10 then
 		powerUp.x = 300
 		powerUp.switcher = true
-		powerUp.counter = 300
+		powerUp.counter = 300	-- length of the power up 
 		powerUp.x_velocity = 0
 	end
-	powerUp.x = powerUp.x - powerUp.x_velocity
+	powerUp.x = powerUp.x - powerUp.x_velocity	-- increment velocity 
+	-- if the plater is in the power up state, decrease the counter
 	if powerUp.switcher == true then
 		powerUp.counter = powerUp.counter - 1
 	end
+	-- If counter is 0, exit power up state 
 	if powerUp.counter < 0 then
 		powerUp.switcher = false
 	end
+	-- Wrap power up back to the right
 	if powerUp.x < 0 then
 		powerUp.x = 300
 		powerUp.x_velocity = 0
@@ -248,14 +276,15 @@ function game.draw()
 	-- Draw Character
 	if powerUp.switcher == true then
 		unicornAnimation:draw(image, 0,50)
+	elseif player.y_velocity ~= 0 then
+		love.graphics.draw(player.jumpImage,player.x,player.y,0,1 )
 	else
 		runnerAnimation:draw(image2, player.x ,player.y)		
 	end
 
 
-	-- Draw the power up if its in the screen
-	
-		love.graphics.draw(powerUp.image, powerUp.x, powerUp.y)
+	-- Draw the power up (may be off screen)
+	love.graphics.draw(powerUp.image, powerUp.x, powerUp.y)
 	
 
 	love.graphics.setColor(255,255,255)

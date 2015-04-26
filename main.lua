@@ -10,7 +10,7 @@ function love.load()
     world = love.physics.newWorld(0, 50*12, true)
 
     -- load images (global assets)
-    slices_fn = {"bottle","background","unicornTilesheet","runningmvp","map_normal", "map_pit","map_pit1","map_pit2","map_pit3","map_normal1","map_normal2","map_normal3","map_normal4","map_normal5","map_normal6","map_normal7" }
+    slices_fn = {"mpjump","bottle","background","unicornTilesheet","runningmvp","map_normal","map_pit1","map_pit2","map_pit3","map_normal1","map_normal2","map_normal3","map_normal4","map_normal5","map_normal6","map_normal7" }
     slices = {}
     for _,v in ipairs(slices_fn) do
             slices[v] = {}
