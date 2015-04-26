@@ -13,10 +13,11 @@ end
 function ks.draw()
 	-- draw title image, 32is height of title image,will start right above the screen and move down
 	--			(ks.dt_temp-1)*30*scale	  x	  y position (+ goes down)	0 = rotation
-	
+	theScore = "Your Score:"..realScore
+
 	love.graphics.draw(kScreen, 0, 0, 0, scale-0.7, scale-0.5)
 	love.graphics.setColor(255, 255, 255)
-    
+    love.graphics.print(theScore, love.graphics.getWidth()/2-90, 30*scale,0,2,2,0,0)
     if ks.dt_temp == 2.5 then
 		-- printf will take string and formats it 							center | left | right
 		love.graphics.printf("'R' to Restart", 0, 85*scale, love.graphics.getWidth(), "center")
