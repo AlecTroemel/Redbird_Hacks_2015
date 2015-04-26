@@ -59,8 +59,7 @@ function game.load()
     end
 
     -- Create the Character 
-
-    -- Create tilesheet 
+    -- Create tilesheet and animations
     player = {}
     player.x = 15
     player.y = 65
@@ -133,7 +132,7 @@ function game.update(dt)
 				temp.slice = typesOfSlices["normal7"]					
 			else
 				if number == 8 then
-					temp.slice = typesOfSlices["pit"]
+					temp.slice = typesOfSlices["pit1"]
 				elseif  number == 9 then
 					temp.slice = typesOfSlices["pit1"]
 				elseif  number == 10 then
@@ -152,7 +151,7 @@ function game.update(dt)
 	end
 
 	-- Super messy collsion stufffff
-	floorX = 65
+	floorX = 65 
 	if floor.slice == typesOfSlices["pit"]  or
 	   floor.slice == typesOfSlices["pit1"] or
 	   floor.slice == typesOfSlices["pit2"] or
@@ -172,10 +171,15 @@ function game.update(dt)
        		-- different speeds if the game lags
         	player.y_velocity = player.y_velocity - gravity * dt
 
-        	if player.y > floorX and floorX == 128 then
+        	if floorX == 128 then
+        		if (player.y > 90) then
+
         		-- game over
-        		state = "over"
-        	elseif player.y > floorX then -- we hit the ground again
+        		--player.y = 65
+        			state = "ks"
+        		end
+
+        	elseif player.y > 65 then -- we hit the ground again
             	player.y_velocity = 0
             	player.y = 65
             	player.jetpack_fuel = player.jetpack_fuel_max
