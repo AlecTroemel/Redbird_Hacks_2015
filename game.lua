@@ -79,7 +79,7 @@ function game.load()
     -- Create tilesheet and animations
     player = {}
     player.x = 15
-    player.y = 65
+    player.y = 50
     player.y_velocity = 0
  	player.jetpack_fuel = 0.1
  	player.jetpack_fuel_max = 0.1
@@ -220,6 +220,10 @@ function game.update(dt)
 	   floor.slice == typesOfSlices["pit2"] or
 	   floor.slice == typesOfSlices["pit3"] then
 	   		floorX = 128
+   	elseif floor.slice == typesOfSlices["high1"]  or
+   		   floor.slice == typesOfSlices["high2"]  or
+   		   floor.slice == typesOfSlices["high3"]  then
+   		   	floorX = 33
 	end
 
 	-- handle jumping and falling 
@@ -229,10 +233,20 @@ function game.update(dt)
         	player.jetpack_fuel = player.jetpack_fuel - dt -- decrease the fuel meter
         	player.y_velocity = 20 + player.y_velocity + jump_height * (2*dt / player.jetpack_fuel_max)
     	end
-    	if player.y_velocity ~= 0 or floorX == 128 then -- we're probably jumping
-       		player.y = player.y - player.y_velocity * dt -- dt means we wont move at
-       		-- different speeds if the game lags
-        	player.y_velocity = player.y_velocity - gravity * dt
+
+    	 if floorX == 33 and player.y > 55 then
+			love.audio.stop(gameMusic)
+			ks.load()
+			state = "ks"
+			realScore = 0
+    	end
+    	if player.y_velocity ~= 0 or floorX == 128  or floorX == 65 then -- we're probably jumping
+       			player.y = player.y - player.y_velocity * dt
+        		player.y_velocity = player.y_velocity - gravity * dt
+        	
+        	if player.y == 65 and floorX == 65 then
+        		player.y_velocity = 0
+        	end
 
         	if floorX == 128 then
         		if (player.y > 90) then
@@ -241,13 +255,15 @@ function game.update(dt)
         			state = "ks"
         			realScore = 0
         		end
-        	elseif player.y > 65 then -- we hit the ground again
+        	elseif player.y > floorX then -- we hit the ground again
             	player.y_velocity = 0
-            	player.y = 65
+            	player.y = floorX
             	player.jetpack_fuel = player.jetpack_fuel_max
-        	end
+            end
     	end
 	end
+
+
 
 	-- Power up movement and collision
 	--if yhe player is not in the power up state and the power up is not moving 
@@ -280,7 +296,8 @@ function game.update(dt)
 		love.audio.pause(powerUpMusic)
 		love.audio.resume(gameMusic)
 		powerUp.switcher = false
-		powerUp.x_velocity = 0
+		powerUp.x = 300
+		player.jumping = true
 	end
 	-- Wrap power up back to the right
 	if powerUp.x < 0 then
@@ -365,7 +382,7 @@ function game.draw()
 
 	-- Draw Character
 	if powerUp.switcher == true then
-		unicornAnimation:draw(image, 0,50)
+		unicornAnimation:draw(image, 0,20)
 	elseif player.y_velocity ~= 0 then
 		love.graphics.draw(player.jumpImage,player.x,player.y,0,1 )
 	else
