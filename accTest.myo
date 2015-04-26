@@ -2,15 +2,26 @@ scriptId = 'com.thalmic.examples.accelerationTest'
 scriptTitle = "ACCTest"
 scriptDetailsUrl = "" -- We don't have this until it's submitted to the Myo Market
 
+--[[function conditionallySwapWave(pose)
+	if myo.getArm() == "left" then
+		if pose == "waveIn" then
+			pose = "waveOut"
+		elseif pose == "waveOut" then
+			pose = "waveIn"
+		end
+	end
+	return pose
+end]]--
+
 function onPeriodic()
-	
+ 		_, y, _ = myo.getAccel()
+		--myo.debug("y: " .. y)
+		accel(y)
 end
 
-function onPoseEdge(pose, edge)
-	myo.debug("onPseEdge: " .. pse .. ", " .. edge)
-end
+
 function onForegroundWindowChange(app, title)
-    --myo.debug("forground" .. app .. ", " .. title ..)
+    --myo.debug("forground" .. app .. ", " .. title )
     return true
 end
 
@@ -21,34 +32,90 @@ end
 function onActiveChange(isActive)
 	myo.debug("Active change")
 end
+
 function onLock()
 	--myo.controlMouse(false)
 end
 
 function onUnlock()
 	--myo.controlMouse(true)
+	myo.unlock("hold")
 end
 
 function jump()
 	myo.keyboard("up_arrow", "down")
+	local ans = 99999
+	
+	_, y, _ = myo.getAccel()
+	--myo.debug("y: " .. y)
+	local  t = 0
+	
+
+	unjump() 
 end
 
+function unjump()
+	--myo.debug("unjump")
+	myo.keyboard("up_arrow", "up")
+end
 
+function accel(y)
+ 	if myo.getArm() == "right" then
+	 	if y > -0.2 then
+	 	myo.debug("right jump called")
+	 		jump()
+	 	end
+	else
+	 	if y < 0.3 then
+	 		myo.debug("left jump")
+	 		jump()
+	 	end
+	 end
+ end
 
 function onPoseEdge(pose, edge)
-	
-	if pose == "fist" then
-		myo.debug("fisting")
-		jump()
+	if edge == "on" then 
+		if pose == "doubleTap" then 
+			if myo.isUnlocked() == true then
+				myo.lock()
+			end
+		end
+
+		if pose == "fingersSpread" then
+			myo.keyboard("down_arrow", "down")	
+		end
+
+		if pose == "fist" then
+			myo.debug("fisting")
+			--myo.keyboard("up_arrow", "down")
+			--jump()
+			
+		end
+
+		if pose == "waveIn" then
+			--myo.debug("wave in")
+			changeGameDiff(1)
+		end
+		if pose == "waveOut" then
+			--myo.debug("wave out")
+			changeGameDiff(0)
+		end
 	end
 	
-
-
-	
 	if pose == "rest" then
-		myo.keyboard("up_arrow", "up")
+		--myo.keyboard("up_arrow", "up")
 		myo.keyboard("down_arrow", "up")
 		myo.keyboard("left_arrow", "up")
 		myo.keyboard("right_arrow", "up")
+		myo.unlock("hold")
+	end
+end
+
+function changeGameDiff(x)
+	myo.debug("game change diff")
+	if x == "1" then
+		myo.keyboard("u")
+	elseif x == "0" then 
+		myo.keyboard("d")
 	end
 end
