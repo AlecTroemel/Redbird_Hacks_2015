@@ -6,6 +6,14 @@ local image, image2, unicornAnimation, runnerAnimation
 
 
 function game.load()
+	played = false
+	toPlay = true
+	gameMusic = love.audio.newSource("assets/gameMusic.ogg")
+	music:setLooping(true)
+    
+    powerUpMusic = love.audio.newSource("assets/powerUpMusic.ogg")
+	music:setLooping(true)
+    
 	game.hue = 0
 	game.clock = 0 -- time sense game is loaded
 	game.speed = 2
@@ -95,8 +103,10 @@ end
 
 
 function game.update(dt)
-
-		
+    if toPlay then 
+    	love.audio.play(gameMusic)
+		toPlay = false
+	end	
 	-- power up color change and animation update 
 	if powerUp.switcher == true then
 		game.hue =game.hue + 7
@@ -204,6 +214,7 @@ function game.update(dt)
         	if floorX == 128 then
         		if (player.y > 90) then
         			state = "ks"
+        			love.audio.stop(gameMusic)
         		end
         	elseif player.y > 65 then -- we hit the ground again
             	player.y_velocity = 0
@@ -227,6 +238,12 @@ function game.update(dt)
 		powerUp.switcher = true
 		powerUp.counter = 300	-- length of the power up 
 		powerUp.x_velocity = 0
+        love.audio.pause(gameMusic)
+        if(played)then
+		love.audio.resume(powerUpMusic)
+	else
+		love.audio.play(powerUpMusic)
+	end
 	end
 	powerUp.x = powerUp.x - powerUp.x_velocity	-- increment velocity 
 	-- if the plater is in the power up state, decrease the counter
@@ -235,11 +252,15 @@ function game.update(dt)
 	end
 	-- If counter is 0, exit power up state 
 	if powerUp.counter < 0 then
+		love.audio.pause(powerUpMusic)
+		love.audio.resume(gameMusic)
 		powerUp.switcher = false
 	end
 	-- Wrap power up back to the right
 	if powerUp.x < 0 then
+		
 		powerUp.x = 300
+		
 		powerUp.x_velocity = 0
 	end
 
