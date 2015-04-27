@@ -12,10 +12,10 @@ function game.load()
 	realScore = 0
 	played = false
 	toPlay = true
-	gameMusic = love.audio.newSource("assets/gameMusic.ogg")
+	gameMusic = musicMaster["gameMusic"]
 	music:setLooping(true)
     
-    powerUpMusic = love.audio.newSource("assets/powerUpMusic.ogg")
+    powerUpMusic = musicMaster["powerUpMusic"]
 	music:setLooping(true)
     
 	game.hue = 0
@@ -237,6 +237,7 @@ function game.update(dt)
 
     	 if floorX == 33 and player.y > 55 then
 			love.audio.stop(gameMusic)
+			love.audio.stop(powerUpMusic)
 			ks.load()
 			state = "ks"
 			--realScore = 0
@@ -252,6 +253,7 @@ function game.update(dt)
         	if floorX == 128 then
         		if (player.y > 90) then
         			love.audio.stop(gameMusic)
+        			love.audio.stop(powerUpMusic)
         			ks.load()
         			state = "ks"
         			--realScore = 0
@@ -297,7 +299,7 @@ function game.update(dt)
 		love.audio.pause(powerUpMusic)
 		love.audio.resume(gameMusic)
 		powerUp.switcher = false
-		powerUp.x = 300
+		--powerUp.x = 300
 		player.jumping = true
 
 	end
@@ -309,13 +311,6 @@ function game.update(dt)
 
 	-- Speed up the game.. Currently not working
 	-- game.speed = game.speed + 0.001
-
-    -- Reset button for debug
-	if love.keyboard.isDown("down") then
-        player.body:setX(20)
-        player.body:setY(50)
-        player.xVel = 0;
-    end
 end
 
 function game.draw()
@@ -400,11 +395,6 @@ function game.draw()
 end
 
 function game.keypressed(key)
-	if key == "i" then
-		powerUp.switcher = true
-	elseif key == "u" then 
-		powerUp.switcher = false
-	end
 end
 
 

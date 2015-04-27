@@ -6,7 +6,7 @@ function ks.load()
 	ks.dt_temp = 0
 	kScreen = love.graphics.newImage("assets/ksScreen.jpeg")
 	local button = loveframes.Create(button)
-	musicKs = love.audio.newSource("assets/ksMusic.ogg")
+	musicKs = musicMaster["ksMusic"]
 	switcher = true
 end
 
